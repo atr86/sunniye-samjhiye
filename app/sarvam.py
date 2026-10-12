@@ -47,7 +47,7 @@ def stt_chunk(path: str, mode: str = "transcribe",
     h = hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
     ck = CACHE / f"stt_{STT_MODEL}_{mode}_{language_code}_{h}.json"
     if ck.exists():
-        return json.loads(ck.read_text())
+        return json.loads(ck.read_text(encoding="utf-8"))
 
     def call():
         with open(path, "rb") as f:
@@ -65,7 +65,7 @@ def stt_chunk(path: str, mode: str = "transcribe",
             )
 
     out = _post_with_retry(call).json()
-    ck.write_text(json.dumps(out, ensure_ascii=False))
+    ck.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     return out
 
 
@@ -142,7 +142,7 @@ def docai_digitise(file_path: str, language: str = "en-IN",
     h = hashlib.sha256(pathlib.Path(file_path).read_bytes()).hexdigest()
     ck = CACHE / f"docai_digitise_{language}_{output_format}_{h}.json"
     if ck.exists():
-        return json.loads(ck.read_text())
+        return json.loads(ck.read_text(encoding="utf-8"))
 
     # Create job
     def create():
@@ -207,5 +207,5 @@ def docai_digitise(file_path: str, language: str = "en-IN",
         pages.append({"page": 1, "text": text})
 
     result = {"pages": pages, "raw_format": output_format}
-    ck.write_text(json.dumps(result, ensure_ascii=False))
+    ck.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
     return result

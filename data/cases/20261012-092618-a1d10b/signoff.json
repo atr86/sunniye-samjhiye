@@ -1,0 +1,22 @@
+{
+  "case_id": "20261012-092618-a1d10b",
+  "signed_at_utc": "2026-10-12T09:26:18.299409+00:00",
+  "doctor": {
+    "name": "Dr. Sharma",
+    "registration_no": "MCI-12345"
+  },
+  "attestation": "Reviewed all items; summary reflects my clinical judgement.",
+  "content_sha256": "1bb531a7c0bbd94e010c1d2eb94e8e2d1c5b69927443c374007008985e199580",
+  "audio_sha256": null,
+  "prescription_sha256": [],
+  "models": {
+    "stt": "saaras:v3",
+    "ocr": "sarvam-vision",
+    "llm": "sarvam-105b"
+  },
+  "decisions": {
+    "F1": "confirmed",
+    "H1": "acknowledged"
+  },
+  "disclaimer": "Documentation aid, not a diagnostic device. AI hypotheses are unverified."
+}

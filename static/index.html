@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunniye, Samjhiye — सुनिए, समझिए</title>
+    <meta name="description" content="Patient intake storyteller for OPD triage. Listen first. Understand next.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --bg-card: #1a1d27;
+            --bg-card-hover: #222636;
+            --border: #2a2e3f;
+            --text: #e8eaf0;
+            --text-dim: #8b8fa3;
+            --text-muted: #5e6278;
+            --green: #34d399;
+            --green-bg: rgba(52, 211, 153, 0.08);
+            --green-border: rgba(52, 211, 153, 0.25);
+            --amber: #fbbf24;
+            --amber-bg: rgba(251, 191, 36, 0.08);
+            --amber-border: rgba(251, 191, 36, 0.25);
+            --blue: #60a5fa;
+            --blue-bg: rgba(96, 165, 250, 0.1);
+            --red: #f87171;
+            --red-bg: rgba(248, 113, 113, 0.1);
+            --purple: #a78bfa;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, 'Noto Sans Devanagari', 'Noto Sans Bengali',
+                         'Noto Sans Tamil', 'Noto Sans Telugu', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ---- Demo Banner ---- */
+        .demo-banner {
+            background: linear-gradient(90deg, #f59e0b22, #ef444422);
+            border-bottom: 1px solid var(--amber-border);
+            text-align: center;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--amber);
+            font-weight: 500;
+        }
+
+        /* ---- Header ---- */
+        header {
+            background: linear-gradient(180deg, #181b25 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--green), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .logo .tagline {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-controls select, .header-controls .case-id {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+        }
+
+        /* ---- Layout ---- */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* ---- Steps ---- */
+        .step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .step:hover { border-color: #3a3f55; }
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .step-number {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px;
+            background: var(--blue-bg);
+            color: var(--blue);
+            flex-shrink: 0;
+        }
+        .step-number.done {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+        .step-title { font-weight: 600; font-size: 16px; flex: 1; }
+        .step-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .step-body { padding: 0 20px 20px; }
+
+        /* ---- Buttons ---- */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px;
+            border: none; border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-success { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+        .btn-success:hover { background: rgba(52, 211, 153, 0.15); }
+        .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248, 113, 113, 0.25); }
+        .btn-danger:hover { background: rgba(248, 113, 113, 0.15); }
+        .btn-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+        .btn-amber:hover { background: rgba(251, 191, 36, 0.15); }
+        .btn-outline {
+            background: transparent; color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover { background: var(--bg-card-hover); color: var(--text); }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+        /* ---- Audio ---- */
+        .record-area {
+            display: flex; align-items: center; gap: 16px;
+            flex-wrap: wrap;
+        }
+        .record-btn {
+            width: 56px; height: 56px; border-radius: 50%;
+            border: 3px solid var(--red);
+            background: transparent; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .record-btn .dot {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: var(--red);
+            transition: all 0.2s;
+        }
+        .record-btn.recording .dot {
+            border-radius: 4px; width: 20px; height: 20px;
+        }
+        .record-btn.recording { border-color: var(--red); animation: pulse-ring 1.5s infinite; }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(248, 113, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
+        }
+        .record-timer {
+            font-variant-numeric: tabular-nums;
+            font-size: 18px; font-weight: 600; color: var(--text-dim);
+            min-width: 60px;
+        }
+        .record-timer.active { color: var(--red); }
+        .upload-label {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: var(--radius-sm);
+            border: 1px dashed var(--border); color: var(--text-dim);
+            cursor: pointer; font-size: 13px; transition: all 0.2s;
+        }
+        .upload-label:hover { border-color: var(--blue); color: var(--blue); }
+
+        audio { width: 100%; margin-top: 12px; border-radius: var(--radius-sm); }
+
+        /* ---- Transcript segments ---- */
+        .segments { margin-top: 16px; }
+        .segment {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 10px 14px; border-radius: var(--radius-sm);
+            margin-bottom: 6px; transition: background 0.2s;
+        }
+        .segment:hover { background: var(--bg-card-hover); }
+        .seg-chip {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600;
+            cursor: pointer; flex-shrink: 0;
+            background: var(--blue-bg); color: var(--blue);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            transition: all 0.2s;
+        }
+        .seg-chip:hover { background: rgba(96, 165, 250, 0.2); }
+        .seg-text {
+            font-size: 15px; line-height: 1.7;
+        }
+
+        /* ---- Prescription ---- */
+        .rx-layout {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .rx-preview {
+            background: var(--bg); border-radius: var(--radius-sm);
+            border: 1px solid var(--border); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 200px;
+        }
+        .rx-preview img { max-width: 100%; max-height: 400px; object-fit: contain; }
+        .rx-text-box {
+            background: var(--bg); border-radius: var(--radius-sm);
+            border: 1px solid var(--border); padding: 16px;
+            font-size: 14px; white-space: pre-wrap; max-height: 400px; overflow-y: auto;
+        }
+        .rx-upload-area {
+            border: 2px dashed var(--border); border-radius: var(--radius);
+            padding: 40px; text-align: center; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .rx-upload-area:hover { border-color: var(--blue); }
+        .rx-upload-area svg { width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 12px; }
+        .rx-upload-area p { color: var(--text-dim); font-size: 14px; }
+
+        /* ---- Summary Columns ---- */
+        .summary-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .summary-col {
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .col-header {
+            padding: 14px 18px;
+            font-weight: 700; font-size: 15px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .col-verbatim .col-header {
+            background: var(--green-bg);
+            color: var(--green);
+            border-bottom: 1px solid var(--green-border);
+        }
+        .col-hypothesis .col-header {
+            background: var(--amber-bg);
+            color: var(--amber);
+            border-bottom: 1px solid var(--amber-border);
+        }
+        .col-body { padding: 12px; }
+
+        /* ---- Fact / Hypothesis cards ---- */
+        .fact-card, .hyp-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .fact-card:hover, .hyp-card:hover {
+            border-color: #3a3f55;
+            transform: translateY(-1px);
+        }
+        .fact-card.flash {
+            animation: flash-highlight 1s ease;
+        }
+        @keyframes flash-highlight {
+            0%, 100% { box-shadow: none; }
+            50% { box-shadow: 0 0 0 3px var(--green); }
+        }
+        .fact-id, .hyp-id {
+            font-size: 11px; font-weight: 700;
+            padding: 2px 8px; border-radius: 4px;
+            display: inline-block; margin-bottom: 6px;
+        }
+        .fact-id { background: var(--green-bg); color: var(--green); }
+        .hyp-id { background: var(--amber-bg); color: var(--amber); }
+        .fact-label { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .fact-quote {
+            font-size: 16px; line-height: 1.6;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--green-border);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 8px 0;
+        }
+        .fact-gloss {
+            font-size: 13px; color: var(--text-dim);
+            font-style: italic; margin-bottom: 8px;
+        }
+        .ai-tag {
+            font-size: 10px; font-weight: 700;
+            padding: 2px 6px; border-radius: 3px;
+            background: var(--amber-bg); color: var(--amber);
+            vertical-align: middle; margin-left: 4px;
+        }
+        .source-chip {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .source-chip.audio {
+            background: var(--blue-bg); color: var(--blue);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+        .source-chip.audio:hover { background: rgba(96, 165, 250, 0.2); }
+        .source-chip.rx {
+            background: var(--purple); color: white;
+            border: none; opacity: 0.8;
+        }
+        .source-chip.rx:hover { opacity: 1; }
+        .fact-actions, .hyp-actions {
+            display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;
+        }
+        .category-tag {
+            font-size: 11px; padding: 2px 8px; border-radius: 4px;
+            background: rgba(255,255,255,0.05); color: var(--text-dim);
+        }
+        .hyp-type {
+            font-size: 11px; padding: 2px 8px; border-radius: 4px;
+            font-weight: 600;
+        }
+        .hyp-type.red_flag { background: var(--red-bg); color: var(--red); }
+        .hyp-type.possible_condition { background: var(--amber-bg); color: var(--amber); }
+        .hyp-type.suggested_question { background: var(--blue-bg); color: var(--blue); }
+        .hyp-type.medication_note { background: rgba(167, 139, 250, 0.1); color: var(--purple); }
+        .hyp-type.data_gap { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+        .hyp-type.unverified_extraction { background: var(--red-bg); color: var(--red); }
+        .hyp-statement { font-size: 14px; margin: 6px 0; }
+        .hyp-rationale { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+        .hyp-supports {
+            font-size: 11px; color: var(--blue); cursor: pointer;
+        }
+        .hyp-supports:hover { text-decoration: underline; }
+        .confidence {
+            font-size: 11px; padding: 2px 8px; border-radius: 4px;
+            font-weight: 600;
+        }
+        .confidence.high { background: var(--red-bg); color: var(--red); }
+        .confidence.medium { background: var(--amber-bg); color: var(--amber); }
+        .confidence.low { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+
+        /* Decision states */
+        .fact-card.confirmed { border-left: 3px solid var(--green); }
+        .fact-card.rejected { opacity: 0.5; border-left: 3px solid var(--red); }
+        .fact-card.edited { border-left: 3px solid var(--blue); }
+        .hyp-card.acknowledged { border-left: 3px solid var(--green); opacity: 0.7; }
+        .hyp-card.dismissed { opacity: 0.4; border-left: 3px solid var(--text-muted); }
+        .hyp-card.promoted { border-left: 3px solid var(--purple); }
+
+        /* ---- Sign-off ---- */
+        .signoff-panel {
+            position: sticky; bottom: 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex; align-items: center; gap: 16px;
+            flex-wrap: wrap;
+            z-index: 100;
+        }
+        .signoff-panel input[type="text"] {
+            background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); padding: 8px 14px;
+            border-radius: var(--radius-sm); font-size: 14px;
+            font-family: inherit;
+        }
+        .signoff-panel label {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; color: var(--text-dim); cursor: pointer;
+        }
+        .signoff-panel input[type="checkbox"] {
+            width: 18px; height: 18px; accent-color: var(--green);
+        }
+        .signoff-result {
+            margin-top: 12px; padding: 16px;
+            background: var(--green-bg);
+            border: 1px solid var(--green-border);
+            border-radius: var(--radius-sm);
+        }
+        .signoff-result .hash {
+            font-family: monospace; font-size: 12px; color: var(--text-dim);
+            word-break: break-all;
+        }
+
+        /* ---- Spinner ---- */
+        .spinner {
+            display: inline-block; width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ---- Toast ---- */
+        .toast-container {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+        }
+        .toast {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 12px 18px;
+            margin-bottom: 8px; font-size: 13px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            animation: slide-in 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .toast.error { border-color: rgba(248, 113, 113, 0.4); }
+        .toast.success { border-color: var(--green-border); }
+        @keyframes slide-in {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ---- Footer ---- */
+        footer {
+            text-align: center; padding: 20px;
+            font-size: 12px; color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 768px) {
+            .summary-grid, .rx-layout { grid-template-columns: 1fr; }
+            header { flex-direction: column; align-items: flex-start; }
+            .signoff-panel { flex-direction: column; align-items: flex-start; }
+        }
+
+        /* ---- Print ---- */
+        @media print {
+            .demo-banner, .record-area, .btn, .upload-label, .signoff-panel,
+            .step-header, .fact-actions, .hyp-actions, audio { display: none !important; }
+            body { background: white; color: black; }
+            .step, .fact-card, .hyp-card, .summary-col { border: 1px solid #ccc; }
+            .col-verbatim .col-header { background: #e6f9f0; color: #059669; }
+            .col-hypothesis .col-header { background: #fef3c7; color: #d97706; }
+            footer { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="demo-banner">⚠️ Demo — do not enter real patient data. Audio/images are sent to Sarvam's cloud APIs.</div>
+
+<header>
+    <div class="logo">
+        <h1>Sunniye, Samjhiye · सुनिए, समझिए</h1>
+        <span class="tagline">Listen first. Understand next.</span>
+    </div>
+    <div class="header-controls">
+        <select id="lang-select">
+            <option value="unknown">Auto-detect</option>
+            <option value="hi-IN">Hindi</option>
+            <option value="bn-IN">Bengali</option>
+            <option value="ta-IN">Tamil</option>
+            <option value="te-IN">Telugu</option>
+            <option value="mr-IN">Marathi</option>
+            <option value="gu-IN">Gujarati</option>
+            <option value="kn-IN">Kannada</option>
+            <option value="ml-IN">Malayalam</option>
+            <option value="pa-IN">Punjabi</option>
+            <option value="en-IN">English</option>
+        </select>
+        <span class="case-id" id="case-id-display">No case</span>
+        <button class="btn btn-primary btn-sm" id="new-case-btn">+ New Case</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Step 1: Listen -->
+    <div class="step" id="step-listen">
+        <div class="step-header">
+            <div class="step-number" id="step1-num">1</div>
+            <div class="step-title">🎤 Listen — Record Patient Narrative</div>
+            <span class="step-status" id="step1-status"></span>
+        </div>
+        <div class="step-body">
+            <div class="record-area">
+                <button class="record-btn" id="record-btn" title="Record / Stop">
+                    <div class="dot"></div>
+                </button>
+                <span class="record-timer" id="record-timer">0:00</span>
+                <span style="color: var(--text-muted); font-size: 13px;">or</span>
+                <label class="upload-label">
+                    📁 Upload audio
+                    <input type="file" accept="audio/*" id="audio-upload" hidden>
+                </label>
+                <div id="audio-spinner" style="display:none"><div class="spinner"></div> Processing…</div>
+            </div>
+            <audio controls id="player" style="display:none"></audio>
+            <div class="segments" id="segments-container"></div>
+        </div>
+    </div>
+
+    <!-- Step 2: Prescription -->
+    <div class="step" id="step-rx">
+        <div class="step-header">
+            <div class="step-number" id="step2-num">2</div>
+            <div class="step-title">📋 Prescription — Upload Prior Prescription</div>
+            <span class="step-status" id="step2-status"></span>
+        </div>
+        <div class="step-body">
+            <div id="rx-upload-area" class="rx-upload-area">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 16V4m0 0L8 8m4-4l4 4M4 20h16"/></svg>
+                <p>Drop prescription image/PDF here or click to upload</p>
+                <input type="file" accept="image/*,.pdf" id="rx-upload" hidden>
+            </div>
+            <div id="rx-spinner" style="display:none; margin-top: 12px;"><div class="spinner"></div> Processing prescription…</div>
+            <div id="rx-result" style="display:none" class="rx-layout">
+                <div class="rx-preview" id="rx-preview"></div>
+                <div class="rx-text-box" id="rx-text-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Summary -->
+    <div class="step" id="step-summary">
+        <div class="step-header">
+            <div class="step-number" id="step3-num">3</div>
+            <div class="step-title">📊 Summary — Clinical Analysis</div>
+            <span class="step-status" id="step3-status"></span>
+        </div>
+        <div class="step-body">
+            <button class="btn btn-primary" id="generate-btn" disabled>
+                ✨ Generate Summary
+            </button>
+            <div id="summary-spinner" style="display:none; margin-top: 12px;"><div class="spinner"></div> Analyzing with Sarvam-105B…</div>
+            <div id="summary-container" style="display:none; margin-top: 16px;">
+                <div class="summary-grid">
+                    <div class="summary-col col-verbatim">
+                        <div class="col-header">✅ Said / Written — verbatim</div>
+                        <div class="col-body" id="verbatim-list"></div>
+                    </div>
+                    <div class="summary-col col-hypothesis">
+                        <div class="col-header">🤖 AI Hypotheses — unverified <span class="ai-tag">AI</span></div>
+                        <div class="col-body" id="hypothesis-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Sign-off (sticky) -->
+    <div id="signoff-section" style="display:none">
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number" id="step4-num">4</div>
+                <div class="step-title">✍️ Sign-off — Doctor Review & Attestation</div>
+            </div>
+            <div class="step-body">
+                <div id="signoff-form">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <input type="text" id="doctor-name" placeholder="Doctor name" style="background:var(--bg); border:1px solid var(--border); color:var(--text); padding:8px 14px; border-radius:var(--radius-sm); font-size:14px; font-family:inherit;">
+                        <input type="text" id="reg-no" placeholder="Registration no. (optional)" style="background:var(--bg); border:1px solid var(--border); color:var(--text); padding:8px 14px; border-radius:var(--radius-sm); font-size:14px; font-family:inherit;">
+                    </div>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-dim); cursor:pointer; margin-bottom: 14px;">
+                        <input type="checkbox" id="attest-check" style="width:18px;height:18px;accent-color:var(--green);">
+                        I have reviewed every item and the summary reflects my clinical judgement.
+                    </label>
+                    <button class="btn btn-primary" id="signoff-btn" disabled>🔒 Sign & Lock</button>
+                </div>
+                <div id="signoff-result" style="display:none" class="signoff-result">
+                    <p style="font-weight:600; color:var(--green);">✅ Case signed and locked</p>
+                    <p>Signed at: <span id="signoff-time"></span></p>
+                    <p>Content hash: <span class="hash" id="signoff-hash"></span></p>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">
+                        Note: This is a content-integrity hash + attestation, not a legally valid digital signature.
+                        Future work: DSC/eSign integration.
+                    </p>
+                    <div style="margin-top: 12px; display:flex; gap:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="downloadSignoff()">📥 Download signoff.json</button>
+                        <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ Print view</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<footer>
+    Documentation aid — not a diagnostic device. All AI content requires clinician verification.
+    &nbsp;|&nbsp; Powered by Sarvam AI
+</footer>
+
+<script>
+// ---- State ----
+let caseId = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let recordingStart = null;
+let timerInterval = null;
+let currentSummary = null;
+let reviewDecisions = {};
+let caseLocked = false;
+
+// ---- Toast ----
+function toast(msg, type = 'info') {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 4000);
+}
+
+// ---- API helpers ----
+async function api(path, opts = {}) {
+    const resp = await fetch(path, opts);
+    if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`${resp.status}: ${text}`);
+    }
+    return resp.json();
+}
+
+// ---- Case management ----
+document.getElementById('new-case-btn').addEventListener('click', async () => {
+    try {
+        const c = await api('/api/cases', { method: 'POST' });
+        caseId = c.case_id;
+        document.getElementById('case-id-display').textContent = caseId;
+        resetUI();
+        toast('New case created', 'success');
+    } catch (e) {
+        toast('Error creating case: ' + e.message, 'error');
+    }
+});
+
+function resetUI() {
+    caseLocked = false;
+    reviewDecisions = {};
+    currentSummary = null;
+    document.getElementById('player').style.display = 'none';
+    document.getElementById('player').src = '';
+    document.getElementById('segments-container').innerHTML = '';
+    document.getElementById('rx-result').style.display = 'none';
+    document.getElementById('rx-upload-area').style.display = '';
+    document.getElementById('summary-container').style.display = 'none';
+    document.getElementById('signoff-section').style.display = 'none';
+    document.getElementById('signoff-result').style.display = 'none';
+    document.getElementById('signoff-form').style.display = '';
+    document.getElementById('generate-btn').disabled = true;
+    document.getElementById('step1-status').textContent = '';
+    document.getElementById('step2-status').textContent = '';
+    document.getElementById('step3-status').textContent = '';
+    document.getElementById('step1-num').className = 'step-number';
+    document.getElementById('step2-num').className = 'step-number';
+    document.getElementById('step3-num').className = 'step-number';
+}
+
+// ---- Recording ----
+const recordBtn = document.getElementById('record-btn');
+const timerEl = document.getElementById('record-timer');
+
+recordBtn.addEventListener('click', async () => {
+    if (!caseId) { toast('Create a new case first', 'error'); return; }
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        return;
+    }
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Choose supported mime type
+        const types = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', ''];
+        let mimeType = '';
+        for (const t of types) {
+            if (!t || MediaRecorder.isTypeSupported(t)) { mimeType = t || undefined; break; }
+        }
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+        mediaRecorder.onstop = async () => {
+            stream.getTracks().forEach(t => t.stop());
+            recordBtn.classList.remove('recording');
+            timerEl.classList.remove('active');
+            clearInterval(timerInterval);
+
+            const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+            await uploadAudioBlob(blob, 'recording.webm');
+        };
+        mediaRecorder.start();
+        recordBtn.classList.add('recording');
+        recordingStart = Date.now();
+        timerEl.classList.add('active');
+        timerInterval = setInterval(updateTimer, 200);
+    } catch (e) {
+        toast('Microphone access denied: ' + e.message, 'error');
+    }
+});
+
+function updateTimer() {
+    const s = Math.floor((Date.now() - recordingStart) / 1000);
+    const m = Math.floor(s / 60);
+    timerEl.textContent = `${m}:${String(s % 60).padStart(2, '0')}`;
+}
+
+// ---- Audio upload ----
+document.getElementById('audio-upload').addEventListener('change', async (e) => {
+    if (!caseId) { toast('Create a new case first', 'error'); return; }
+    const file = e.target.files[0];
+    if (file) await uploadAudioBlob(file, file.name);
+});
+
+async function uploadAudioBlob(blob, filename) {
+    const spinner = document.getElementById('audio-spinner');
+    spinner.style.display = 'flex';
+    const fd = new FormData();
+    fd.append('file', blob, filename);
+    fd.append('language_code', document.getElementById('lang-select').value);
+
+    try {
+        const r = await api(`/api/cases/${caseId}/audio`, { method: 'POST', body: fd });
+        toast(`Transcribed ${r.segments} segments (${r.language_code})`, 'success');
+        document.getElementById('step1-status').textContent = '✅ Done';
+        document.getElementById('step1-num').className = 'step-number done';
+        await loadTranscript();
+        document.getElementById('generate-btn').disabled = false;
+    } catch (e) {
+        toast('Transcription failed: ' + e.message, 'error');
+    } finally {
+        spinner.style.display = 'none';
+    }
+}
+
+async function loadTranscript() {
+    const data = await api(`/api/cases/${caseId}`);
+    const t = data.transcript;
+    if (!t) return;
+
+    // Show audio player
+    const player = document.getElementById('player');
+    player.src = `/api/cases/${caseId}/audio.wav`;
+    player.style.display = 'block';
+
+    // Show segments
+    const container = document.getElementById('segments-container');
+    container.innerHTML = '';
+    for (const seg of t.segments) {
+        if (!seg.text) continue;
+        const div = document.createElement('div');
+        div.className = 'segment';
+        const mm = Math.floor(seg.offset_s / 60);
+        const ss = Math.floor(seg.offset_s % 60);
+        div.innerHTML = `
+            <span class="seg-chip" onclick="seekTo(${seg.offset_s})" title="Click to play from here">
+                ▶ ${mm}:${String(ss).padStart(2,'0')}
+            </span>
+            <span class="seg-text">${escHtml(seg.text)}</span>
+        `;
+        container.appendChild(div);
+    }
+}
+
+function seekTo(t) {
+    const p = document.getElementById('player');
+    p.currentTime = Math.max(0, t - 0.5);
+    p.play();
+}
+
+// ---- Prescription ----
+const rxUploadArea = document.getElementById('rx-upload-area');
+const rxInput = document.getElementById('rx-upload');
+
+rxUploadArea.addEventListener('click', () => rxInput.click());
+rxUploadArea.addEventListener('dragover', e => { e.preventDefault(); rxUploadArea.style.borderColor = 'var(--blue)'; });
+rxUploadArea.addEventListener('dragleave', () => { rxUploadArea.style.borderColor = 'var(--border)'; });
+rxUploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    rxUploadArea.style.borderColor = 'var(--border)';
+    if (e.dataTransfer.files.length) uploadRx(e.dataTransfer.files[0]);
+});
+rxInput.addEventListener('change', e => { if (e.target.files[0]) uploadRx(e.target.files[0]); });
+
+async function uploadRx(file) {
+    if (!caseId) { toast('Create a new case first', 'error'); return; }
+    const spinner = document.getElementById('rx-spinner');
+    spinner.style.display = 'flex';
+    rxUploadArea.style.display = 'none';
+
+    const fd = new FormData();
+    fd.append('file', file);
+    // Use detected audio language if available
+    const lang = document.getElementById('lang-select').value;
+    fd.append('language', lang === 'unknown' ? 'en-IN' : lang);
+
+    try {
+        const r = await api(`/api/cases/${caseId}/prescription`, { method: 'POST', body: fd });
+        toast('Prescription processed', 'success');
+        document.getElementById('step2-status').textContent = '✅ Done';
+        document.getElementById('step2-num').className = 'step-number done';
+
+        // Show preview
+        const result = document.getElementById('rx-result');
+        result.style.display = 'grid';
+        const preview = document.getElementById('rx-preview');
+        if (file.type.startsWith('image/')) {
+            const url = URL.createObjectURL(file);
+            preview.innerHTML = `<img src="${url}" alt="Prescription">`;
+        } else {
+            preview.innerHTML = '<p style="color:var(--text-dim)">📄 PDF uploaded</p>';
+        }
+        document.getElementById('rx-text-display').textContent = r.text_preview || '(empty)';
+    } catch (e) {
+        toast('Prescription processing failed: ' + e.message, 'error');
+        rxUploadArea.style.display = '';
+    } finally {
+        spinner.style.display = 'none';
+    }
+}
+
+// ---- Summary ----
+document.getElementById('generate-btn').addEventListener('click', async () => {
+    if (!caseId) return;
+    const spinner = document.getElementById('summary-spinner');
+    const btn = document.getElementById('generate-btn');
+    spinner.style.display = 'flex';
+    btn.disabled = true;
+
+    try {
+        currentSummary = await api(`/api/cases/${caseId}/summary`, { method: 'POST' });
+        renderSummary(currentSummary);
+        document.getElementById('step3-status').textContent = '✅ Done';
+        document.getElementById('step3-num').className = 'step-number done';
+        document.getElementById('signoff-section').style.display = '';
+        toast('Summary generated', 'success');
+    } catch (e) {
+        toast('Summary generation failed: ' + e.message, 'error');
+        btn.disabled = false;
+    } finally {
+        spinner.style.display = 'none';
+    }
+});
+
+function renderSummary(summary) {
+    document.getElementById('summary-container').style.display = 'block';
+    const vList = document.getElementById('verbatim-list');
+    const hList = document.getElementById('hypothesis-list');
+    vList.innerHTML = '';
+    hList.innerHTML = '';
+
+    // Verbatim facts
+    for (const f of summary.verbatim_facts || []) {
+        const card = document.createElement('div');
+        card.className = 'fact-card';
+        card.id = `fact-${f.id}`;
+        const decision = reviewDecisions[f.id];
+        if (decision) card.classList.add(decision);
+
+        let chipHtml = '';
+        if (f.source === 'audio' && f.time) {
+            const mm = Math.floor(f.time.start_s / 60);
+            const ss = Math.floor(f.time.start_s % 60);
+            const prec = f.time.precision === 'chunk' ? ' ≈' : '';
+            chipHtml = `<span class="source-chip audio" onclick="seekTo(${f.time.start_s})" title="Play from ${mm}:${String(ss).padStart(2,'0')}${prec}">▶ ${mm}:${String(ss).padStart(2,'0')}${prec}</span>`;
+        } else if (f.source === 'prescription' && f.rx) {
+            chipHtml = `<span class="source-chip rx">📄 p${f.rx.page}</span>`;
+        }
+
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+                <span class="fact-id">${f.id}</span>
+                <span class="category-tag">${f.category || ''}</span>
+                ${chipHtml}
+            </div>
+            <div class="fact-label">${escHtml(f.label || '')}</div>
+            <div class="fact-quote">${escHtml(f.quote || '')}</div>
+            <div class="fact-gloss">${escHtml(f.english_gloss || '')} <span class="ai-tag">AI translation</span></div>
+            <div class="fact-actions">
+                <button class="btn btn-success btn-sm" onclick="decideFact('${f.id}','confirmed')">✓ Confirm</button>
+                <button class="btn btn-outline btn-sm" onclick="editFact('${f.id}')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="decideFact('${f.id}','rejected')">✗ Reject</button>
+            </div>
+        `;
+        vList.appendChild(card);
+    }
+
+    // Hypotheses
+    for (const h of summary.ai_hypotheses || []) {
+        const card = document.createElement('div');
+        card.className = 'hyp-card';
+        card.id = `hyp-${h.id}`;
+        const decision = reviewDecisions[h.id];
+        if (decision) card.classList.add(typeof decision === 'object' ? decision.status : decision);
+
+        const supportsHtml = (h.supports || []).map(
+            s => `<span class="hyp-supports" onclick="highlightFact('${s}')">${s}</span>`
+        ).join(', ');
+
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+                <span class="hyp-id">${h.id}</span>
+                <span class="hyp-type ${h.type || ''}">${(h.type || '').replace(/_/g, ' ')}</span>
+                <span class="confidence ${h.confidence || ''}">${h.confidence || ''}</span>
+                <span class="ai-tag">AI</span>
+            </div>
+            <div class="hyp-statement">${escHtml(h.statement || '')}</div>
+            <div class="hyp-rationale">${escHtml(h.rationale || '')}</div>
+            ${supportsHtml ? `<div style="font-size:12px; margin-bottom:6px;">Based on: ${supportsHtml}</div>` : ''}
+            <div class="hyp-actions">
+                <button class="btn btn-success btn-sm" onclick="decideHyp('${h.id}','acknowledged')">👁 Acknowledge</button>
+                <button class="btn btn-outline btn-sm" onclick="decideHyp('${h.id}','dismissed')">🚫 Dismiss</button>
+                <button class="btn btn-amber btn-sm" onclick="promoteHyp('${h.id}')">⬆ Promote</button>
+            </div>
+        `;
+        hList.appendChild(card);
+    }
+
+    updateSignoffBtn();
+}
+
+// ---- Review decisions ----
+function decideFact(id, status) {
+    reviewDecisions[id] = status;
+    const card = document.getElementById(`fact-${id}`);
+    if (card) { card.className = 'fact-card ' + status; }
+    saveReview();
+    updateSignoffBtn();
+}
+
+function editFact(id) {
+    const newText = prompt('Edit text (doctor note):');
+    if (newText !== null) {
+        reviewDecisions[id] = { status: 'edited', new_text: newText };
+        const card = document.getElementById(`fact-${id}`);
+        if (card) card.className = 'fact-card edited';
+        saveReview();
+        updateSignoffBtn();
+    }
+}
+
+function decideHyp(id, status) {
+    reviewDecisions[id] = status;
+    const card = document.getElementById(`hyp-${id}`);
+    if (card) { card.className = 'hyp-card ' + status; }
+    saveReview();
+}
+
+function promoteHyp(id) {
+    const note = prompt('Doctor note for promotion:');
+    if (note !== null) {
+        reviewDecisions[id] = { status: 'promoted', note };
+        const card = document.getElementById(`hyp-${id}`);
+        if (card) card.className = 'hyp-card promoted';
+        saveReview();
+    }
+}
+
+function highlightFact(id) {
+    const card = document.getElementById(`fact-${id}`);
+    if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('flash');
+        setTimeout(() => card.classList.remove('flash'), 1200);
+    }
+}
+
+let saveTimer = null;
+function saveReview() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+        try {
+            await api(`/api/cases/${caseId}/review`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ decisions: reviewDecisions }),
+            });
+        } catch (e) {
+            console.error('Review save failed', e);
+        }
+    }, 500);
+}
+
+// ---- Sign-off ----
+function updateSignoffBtn() {
+    const btn = document.getElementById('signoff-btn');
+    const check = document.getElementById('attest-check');
+    const name = document.getElementById('doctor-name');
+    if (!currentSummary) { btn.disabled = true; return; }
+
+    const allFactsDecided = (currentSummary.verbatim_facts || []).every(
+        f => reviewDecisions[f.id]
+    );
+    btn.disabled = !(allFactsDecided && check.checked && name.value.trim());
+}
+
+document.getElementById('attest-check').addEventListener('change', updateSignoffBtn);
+document.getElementById('doctor-name').addEventListener('input', updateSignoffBtn);
+
+document.getElementById('signoff-btn').addEventListener('click', async () => {
+    const body = {
+        doctor_name: document.getElementById('doctor-name').value.trim(),
+        registration_no: document.getElementById('reg-no').value.trim() || null,
+        attestation: true,
+    };
+    try {
+        const r = await api(`/api/cases/${caseId}/signoff`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        caseLocked = true;
+        document.getElementById('signoff-form').style.display = 'none';
+        document.getElementById('signoff-result').style.display = '';
+        document.getElementById('signoff-time').textContent = r.signed_at_utc;
+        document.getElementById('signoff-hash').textContent = r.content_sha256;
+        document.getElementById('step4-num').className = 'step-number done';
+        toast('Case signed and locked', 'success');
+    } catch (e) {
+        toast('Sign-off failed: ' + e.message, 'error');
+    }
+});
+
+function downloadSignoff() {
+    window.open(`/api/cases/${caseId}/signoff.json`);
+}
+
+// ---- Helpers ----
+function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+// ---- Auto-create case on load ----
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const c = await api('/api/cases', { method: 'POST' });
+        caseId = c.case_id;
+        document.getElementById('case-id-display').textContent = caseId;
+    } catch (e) {
+        console.error('Auto-case creation failed', e);
+    }
+});
+</script>
+</body>
+</html>

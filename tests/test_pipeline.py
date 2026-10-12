@@ -6,7 +6,6 @@ import wave
 import struct
 import math
 import pathlib
-import pytest
 from fastapi.testclient import TestClient
 from dotenv import load_dotenv
 

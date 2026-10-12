@@ -22,7 +22,7 @@ def new_case() -> dict:
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "locked": False,
     }
-    (d / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2))
+    (d / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
     return meta
 
 
@@ -30,18 +30,18 @@ def load_meta(case_id: str) -> dict:
     p = _case_dir(case_id) / "meta.json"
     if not p.exists():
         raise FileNotFoundError(f"Case {case_id} not found")
-    return json.loads(p.read_text())
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def save_meta(case_id: str, meta: dict):
     (_case_dir(case_id) / "meta.json").write_text(
-        json.dumps(meta, ensure_ascii=False, indent=2)
+        json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
 
 def save_json(case_id: str, name: str, data: dict):
     (_case_dir(case_id) / name).write_text(
-        json.dumps(data, ensure_ascii=False, indent=2)
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
 
@@ -49,7 +49,7 @@ def load_json(case_id: str, name: str) -> dict | None:
     p = _case_dir(case_id) / name
     if not p.exists():
         return None
-    return json.loads(p.read_text())
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def case_path(case_id: str) -> pathlib.Path:
@@ -64,5 +64,5 @@ def list_cases() -> list[dict]:
         if d.is_dir():
             meta_p = d / "meta.json"
             if meta_p.exists():
-                cases.append(json.loads(meta_p.read_text()))
+                cases.append(json.loads(meta_p.read_text(encoding="utf-8")))
     return cases

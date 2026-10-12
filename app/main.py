@@ -343,6 +343,8 @@ def serve_prescription(case_id: str):
         ".png": "image/png",
         ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg",
+        ".txt": "text/plain; charset=utf-8",
+        ".text": "text/plain; charset=utf-8",
     }.get(ext, "application/octet-stream")
     return FileResponse(str(f), media_type=mime)
 

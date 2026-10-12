@@ -226,3 +226,33 @@ def test_05_signoff_lock_and_conflict():
         "attestation": True
     })
     assert resp2.status_code == 409
+
+
+def test_06_txt_prescription_upload():
+    """Check 6: Uploading a plain text (.txt) prescription parses directly into rx_text."""
+    case = store.new_case()
+    cid = case["case_id"]
+
+    txt_content = (
+        "Chief Complaints: Fever 3 days\n"
+        "Rx: Tab Paracetamol 650mg TDS\n"
+        "Tab Metformin 500mg BD"
+    )
+
+    resp = client.post(
+        f"/api/cases/{cid}/prescription",
+        files={"file": ("prescription.txt", txt_content.encode("utf-8"), "text/plain")},
+        data={"language": "en-IN"}
+    )
+    assert resp.status_code == 200, resp.text
+    data = resp.json()
+    assert data["status"] == "ok"
+    assert data["pages"] == 1
+    assert "Fever" in data["text_preview"]
+
+    # Verify saved rx_text.json
+    rx_json = store.load_json(cid, "rx_text.json")
+    assert rx_json is not None
+    assert rx_json["raw_format"] == "txt"
+    assert "Paracetamol" in rx_json["combined_text"]
+

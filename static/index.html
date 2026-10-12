@@ -541,8 +541,8 @@
         <div class="step-body">
             <div id="rx-upload-area" class="rx-upload-area">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 16V4m0 0L8 8m4-4l4 4M4 20h16"/></svg>
-                <p>Drop prescription image/PDF here or click to upload</p>
-                <input type="file" accept="image/*,.pdf" id="rx-upload" hidden>
+                <p>Drop prescription image, PDF, or TXT file here or click to upload</p>
+                <input type="file" accept="image/*,.pdf,.txt,text/plain" id="rx-upload" hidden>
             </div>
             <div id="rx-spinner" style="display:none; margin-top: 12px;"><div class="spinner"></div> Processing prescription…</div>
             <div id="rx-result" style="display:none" class="rx-layout">
@@ -839,6 +839,13 @@ async function uploadRx(file) {
         if (file.type.startsWith('image/')) {
             const url = URL.createObjectURL(file);
             preview.innerHTML = `<img src="${url}" alt="Prescription">`;
+        } else if (file.name.endsWith('.txt') || file.type === 'text/plain') {
+            preview.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: var(--text-dim);">
+                    <div style="font-size: 40px; margin-bottom: 8px;">📝</div>
+                    <div style="font-weight: 600; color: var(--text);">${escHtml(file.name)}</div>
+                    <div style="font-size: 12px; margin-top: 4px; color: var(--green);">Plain Text (.txt) Prescription Loaded</div>
+                </div>`;
         } else {
             preview.innerHTML = '<p style="color:var(--text-dim)">📄 PDF uploaded</p>';
         }

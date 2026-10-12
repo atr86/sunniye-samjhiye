@@ -1,3 +1,18 @@
+# Environment and Secrets
+apikey/
 apikey/.gitenv
 .gitenv
 .env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Case data and caches
+data/cases/
+data/cache/

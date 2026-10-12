@@ -105,7 +105,6 @@ def chat(messages: list[dict], model: str = "sarvam-105b",
             )
         r = _post_with_retry(call2, tries=2)
     return r.json()["choices"][0]["message"]["content"]
-    return r.json()["choices"][0]["message"]["content"]
 
 
 def extract_json(txt: str) -> dict:

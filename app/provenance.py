@@ -43,30 +43,35 @@ def to_time(span: tuple[int, int], segments: list[dict]) -> dict | None:
     Returns {start_s, end_s, precision} or None.
     """
     a, b = span
-    hit = [s for s in segments if s["char_end"] > a and s["char_start"] < b]
+    hit = [s for s in segments if s.get("char_end", 0) > a and s.get("char_start", 0) < b]
     if not hit:
         return None
 
     first, last = hit[0], hit[-1]
+    chunk_start = round(float(first.get("offset_s", 0.0)), 2)
+    chunk_end = round(float(last.get("end_s", last.get("offset_s", 0.0) + last.get("dur_s", 0.0))), 2)
 
-    # Try word-level refinement
-    for seg in hit:
-        words = seg.get("words")
-        if not words:
-            continue
-        # Attempt to find first/last word overlap
-        for w in words:
-            ws, we = squash_map(w["w"])
-            w_char_start = seg["char_start"]  # approximate
-            if w.get("start") is not None and w.get("end") is not None:
-                return {
-                    "start_s": round(first.get("offset_s", 0), 2),
-                    "end_s": round(last.get("end_s", last.get("offset_s", 0) + last.get("dur_s", 0)), 2),
-                    "precision": "word",
-                }
+    # Word-level refinement if words exist in hit segments
+    all_words = []
+    for s in hit:
+        ws = s.get("words")
+        if ws and isinstance(ws, list):
+            all_words.extend(ws)
+
+    valid_words = [
+        w for w in all_words
+        if w.get("start") is not None and w.get("end") is not None
+    ]
+
+    if valid_words:
+        return {
+            "start_s": round(float(valid_words[0]["start"]), 2),
+            "end_s": round(float(valid_words[-1]["end"]), 2),
+            "precision": "word",
+        }
 
     return {
-        "start_s": round(first.get("offset_s", 0), 2),
-        "end_s": round(last.get("end_s", last.get("offset_s", 0) + last.get("dur_s", 0)), 2),
+        "start_s": chunk_start,
+        "end_s": chunk_end,
         "precision": "chunk",
     }

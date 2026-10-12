@@ -12,10 +12,11 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-load_dotenv()
+load_dotenv(".env")
+load_dotenv("apikey/.gitenv")
 
 from . import store
-from .audio import to_chunks
+from .audio import to_chunks, get_ffmpeg_cmd
 from .sarvam import stt_chunk, docai_digitise, STT_MODEL
 from .summarize import generate_summary
 from .signoff import create_signoff
@@ -37,11 +38,12 @@ app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 @app.get("/api/health")
 def health():
     key = os.environ.get("SARVAM_API_KEY", "")
-    ffmpeg = shutil.which("ffmpeg")
+    ffmpeg = get_ffmpeg_cmd()
+    ffmpeg_ok = bool(shutil.which("ffmpeg") or (ffmpeg and pathlib.Path(ffmpeg).exists()))
     return {
-        "status": "ok" if key and ffmpeg else "degraded",
+        "status": "ok" if key and ffmpeg_ok else "degraded",
         "api_key_set": bool(key),
-        "ffmpeg_available": bool(ffmpeg),
+        "ffmpeg_available": ffmpeg_ok,
     }
 
 

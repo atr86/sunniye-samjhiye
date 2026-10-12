@@ -99,25 +99,43 @@ def generate_summary(transcript_data: dict, rx_text: str | None,
                     "needs_clinician_verification": True,
                 })
         elif source == "prescription":
-            if rx_text:
-                span = find_span(quote, rx_text)
-                if span:
-                    fact["span"] = {"char_start": span[0], "char_end": span[1]}
-                    fact["rx"] = {"page": 1}  # page-level for now
-                    verified.append(fact)
-                else:
-                    demoted.append({
-                        "type": "unverified_extraction",
-                        "statement": f"{fact.get('label', '')}: {fact.get('english_gloss', '')}",
-                        "rationale": "Quote could not be located verbatim in the prescription text; verify manually.",
-                        "supports": [],
-                        "confidence": "low",
-                        "needs_clinician_verification": True,
-                    })
+            if rx_text and (span := find_span(quote, rx_text)):
+                fact["span"] = {"char_start": span[0], "char_end": span[1]}
+                fact["rx"] = {"page": 1}  # page-level
+                verified.append(fact)
             else:
-                verified.append(fact)  # no rx to verify against
+                demoted.append({
+                    "type": "unverified_extraction",
+                    "statement": f"{fact.get('label', '')}: {fact.get('english_gloss', '')}",
+                    "rationale": "Quote could not be located verbatim in the prescription text; verify manually.",
+                    "supports": [],
+                    "confidence": "low",
+                    "needs_clinician_verification": True,
+                })
         else:
-            verified.append(fact)
+            # Fallback for unspecified source: check audio full_text, then rx_text
+            span = find_span(quote, full_text)
+            if span:
+                fact["span"] = {"char_start": span[0], "char_end": span[1]}
+                time_info = to_time(span, segments)
+                if time_info:
+                    fact["time"] = time_info
+                fact["source"] = "audio"
+                verified.append(fact)
+            elif rx_text and (rx_span := find_span(quote, rx_text)):
+                fact["span"] = {"char_start": rx_span[0], "char_end": rx_span[1]}
+                fact["rx"] = {"page": 1}
+                fact["source"] = "prescription"
+                verified.append(fact)
+            else:
+                demoted.append({
+                    "type": "unverified_extraction",
+                    "statement": f"{fact.get('label', '')}: {fact.get('english_gloss', '')}",
+                    "rationale": "Quote could not be located verbatim in any source text; verify manually.",
+                    "supports": [],
+                    "confidence": "low",
+                    "needs_clinician_verification": True,
+                })
 
     # Re-number IDs
     for i, f in enumerate(verified):

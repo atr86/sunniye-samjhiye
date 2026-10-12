@@ -41,7 +41,7 @@ Create a `.env` file in the project root (or `apikey/.gitenv`):
 ```text
 Patient Voice (Mic / Upload) ──► FFmpeg (16 kHz mono WAV, 25s chunks) ──► Saaras STT (Parallel chunks + timestamps)
                                                                                   │
-Prescription Photo / PDF ─────► Sarvam Vision (Document AI Digitisation) ──────────┤
+Prescription Photo / PDF / TXT ─► Sarvam Vision (Doc AI) or Direct UTF-8 ────────┤
                                                                                   ▼
                                                          Canonical Sources: Transcript segments + Rx text
                                                                                   ▼
@@ -98,6 +98,7 @@ When the doctor reviews every left-column fact and checks the attestation checkb
 ### Sample Data Included:
 - Spoken Audio: `sample_data/sample_hindi_narrative.wav` (Generated via Sarvam AI)
 - Prescription Image: `sample_data/sample_prescription.png` (Synthesized OPD slip with Metformin, Paracetamol, Penicillin allergy note)
+- Prescription Text: `sample_data/sample_prescription.txt` (Plain text prescription for direct intake)
 
 ---
 

@@ -1,0 +1,39 @@
+{
+  "verbatim_facts": [
+    {
+      "id": "F1",
+      "category": "symptom",
+      "label": "Headache",
+      "quote": "सिरदर्द",
+      "english_gloss": "Headache",
+      "source": "audio",
+      "span": {
+        "char_start": 0,
+        "char_end": 7
+      },
+      "time": {
+        "start_s": 0.0,
+        "end_s": 2.0,
+        "precision": "chunk"
+      }
+    }
+  ],
+  "ai_hypotheses": [
+    {
+      "id": "H1",
+      "type": "possible_condition",
+      "statement": "Tension headache",
+      "rationale": "Reported headache",
+      "supports": [
+        "F1"
+      ],
+      "confidence": "low",
+      "needs_clinician_verification": true
+    }
+  ],
+  "model": {
+    "stt": "saaras:v3",
+    "ocr": "sarvam-vision",
+    "llm": "sarvam-105b"
+  }
+}

@@ -209,13 +209,23 @@ async def upload_prescription(case_id: str, file: UploadFile = File(...),
     content = await file.read()
     dest.write_bytes(content)
 
-    # OCR via Document AI
-    try:
-        result = docai_digitise(str(dest), language=language, output_format="md")
-    except Exception as e:
-        logger.error(f"Document AI failed: {e}")
-        # Fallback: return empty with manual entry option
-        result = {"pages": [{"page": 1, "text": ""}], "raw_format": "md"}
+    ext = dest.suffix.lower()
+
+    # Plain text file support: read directly without OCR
+    if ext in (".txt", ".text") or file.content_type == "text/plain":
+        text_content = canon(content.decode("utf-8", errors="replace"))
+        result = {
+            "pages": [{"page": 1, "text": text_content}],
+            "raw_format": "txt",
+        }
+    else:
+        # OCR via Document AI
+        try:
+            result = docai_digitise(str(dest), language=language, output_format="md")
+        except Exception as e:
+            logger.error(f"Document AI failed: {e}")
+            # Fallback: return empty with manual entry option
+            result = {"pages": [{"page": 1, "text": ""}], "raw_format": "md"}
 
     # Combine pages
     all_text = canon("\n\n".join(p["text"] for p in result["pages"]))

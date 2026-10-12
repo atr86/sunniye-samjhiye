@@ -1,0 +1,49 @@
+============================================================
+           CITY GENERAL HOSPITAL & OPD CLINIC
+  Dr. A. Sen, MBBS, MD (General Medicine) | Reg. No: WB-24901
+  Address: 45/2, Acharya Jagadish Chandra Bose Road, Kolkata
+============================================================
+
+Patient Name: Ramesh Verma            Age/Sex: 38 / Male
+Date: 12/10/2026                      Weight: 72 kg
+
+------------------------------------------------------------
+VITAL SIGNS:
+- Temperature: 101.4°F (Intermittent)
+- Blood Pressure: 122/82 mmHg
+- Pulse Rate: 92 bpm
+
+CHIEF COMPLAINTS:
+1. Moderate frontal headache lasting for the past 5 days.
+2. Low-grade fever with mild chills lasting for the past 3 days.
+
+CLINICAL IMPRESSION / PROVISIONAL DIAGNOSIS:
+- Acute febrile illness with tension-type headache (Rule out viral etiology / seasonal infection).
+
+------------------------------------------------------------
+Rx (MEDICATIONS):
+
+1. Tab. Paracetamol 650 mg 
+   - 1 tablet orally, SOS (maximum every 6 hours after food if temperature > 100°F or severe headache) 
+   - Duration: 3 days
+
+2. Cap. Pantoprazole 40 mg 
+   - 1 capsule orally, once daily (empty stomach in the morning) 
+   - Duration: 5 days
+
+3. ORS (Oral Rehydration Salts) 
+   - 1 packet mixed in 1 liter of water, sip throughout the day
+
+INVESTIGATIONS ADVISED:
+- Complete Blood Count (CBC) with ESR
+- Dengue NS1 Antigen & IgM/IgG
+- Malaria Parasite (ICT)
+
+ADVICE:
+- Strict physical rest and adequate oral hydration (at least 3 liters/day).
+- Monitor and maintain temperature chart.
+- Review with lab reports after 48 hours or immediately if breathlessness or high persistent fever develops.
+
+Signature: _______________________
+Dr. A. Sen, MD
+============================================================
